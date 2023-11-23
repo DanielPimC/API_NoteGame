@@ -3,6 +3,7 @@ import connection from '../connection'
 import { user, Roles } from '../types'
 import { generateId } from '../services/IdGenerator'
 import { Authenticator } from '../services/Authenticator'
+import { hash } from '../hashManager'
 
 export default async function createUser(req: Request, res: Response): Promise<void> {
     try{
@@ -30,7 +31,9 @@ export default async function createUser(req: Request, res: Response): Promise<v
         const id: string = generateId()
         const userRole: Roles = role !== undefined ? role : Roles.USER;
 
-        const newUser: user = { id, name, email, password, role: userRole };
+        const cypherPassword = await hash(password);
+
+        const newUser: user = { id, name, email, password: cypherPassword, role: userRole };
 
         await connection('users')
             .insert(newUser)
@@ -39,7 +42,7 @@ export default async function createUser(req: Request, res: Response): Promise<v
             const token = authenticator.generateToken({ id: id, role: role });
 
 
-            res.send(`Usuário criado com sucesso! \n Token do usuário: ${token}`).status(200)
+            res.send(`Usuário criado com sucesso!`).status(200)
     }catch(error: any){
         res.send(error.sqlMessage || error.message)
     }
