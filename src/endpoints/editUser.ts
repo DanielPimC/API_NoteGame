@@ -15,13 +15,12 @@ export default async function editUser(req: Request, res: Response):Promise<void
             throw new Error("Preencha o header corretamente. Campo necessário: 'authorization'.")
         }
 
-
-        const tokenData = authenticator.getTokenData(token)
         if(!name){
-            res.send("Preencha os campos corretamente. Campo necessário: 'name'.").status(422)
-            throw new Error()
+            res.status(422)
+            throw new Error("Preencha os campos corretamente. Campo necessário: 'name'.")
         }
 
+        const tokenData = authenticator.getTokenData(token)
         await connection('users')
             .update({ name })
             .where({ id: tokenData.id })

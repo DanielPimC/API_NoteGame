@@ -14,7 +14,7 @@ export default async function createUser(req: Request, res: Response): Promise<v
         }
 
         if (role !== undefined && role !== "ADMIN" && role !== "USER") {
-            res.status(422).send("Role inválida. Escolha entre 'USER' e 'ADMIN'.");
+            res.status(422)
             throw new Error("Role inválida. Escolha entre 'USER' e 'ADMIN'.");
         }
 
