@@ -8,7 +8,7 @@ export class Authenticator {
         return jwt.sign(
             payload,
             String(process.env.JWT_KEY),
-            { expiresIn: '10min' }
+            { expiresIn: '1d' }
         );
     };
 

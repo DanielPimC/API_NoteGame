@@ -1,0 +1,17 @@
+CREATE TABLE Users(
+	id VARCHAR,
+	name VARCHAR,
+	email VARCHAR,
+	password VARCHAR,
+	role VARCHAR
+)
+
+CREATE TABLE Games(
+	id VARCHAR,
+	email_owner VARCHAR,
+	name VARCHAR,
+	genre VARCHAR,
+	rating INT
+)
+
+OBS: O email "daniel@admin.com" já é criado com a role ADMIN para testes.

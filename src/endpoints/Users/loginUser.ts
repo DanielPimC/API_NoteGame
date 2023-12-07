@@ -1,8 +1,6 @@
 import { Request, Response } from 'express'
-import connection from '../connection'
-import { user } from '../types'
-import { generateId } from '../services/IdGenerator'
-import { Authenticator } from '../services/Authenticator'
+import connection from '../../connection'
+import { Authenticator } from '../../services/Authenticator'
 import { compare } from 'bcryptjs'
 
 export default async function loginUser(req: Request, res: Response):Promise<void> {
@@ -17,25 +15,23 @@ export default async function loginUser(req: Request, res: Response):Promise<voi
         const [user] = await connection('users')
             .where({ email })
 
-
         if (!user){
+            res.status(404)
             throw new Error("Usuário inexistente.")
         }
 
         const correctPassword = await compare(password, user.password)
 
         if(!correctPassword){
-            res.status(400)
+            res.status(401)
             throw new Error("Senha incorreta.")
         }
-
-
 
         const authenticator = new Authenticator()
         const token = authenticator.generateToken({ id: user.id, role: user.role })
 
-        res.send(`Usuário logado com sucesso! \n Token: ${token}`).status(201)
-        }catch(error: any){
-            res.send(error.sqlMessage || error.message)
-        }
+        res.send(`Usuário logado com sucesso! \n Token: ${token}`).status(200)
+    }catch(error: any){
+            res.send(error.sqlMessage || error.message).status(500)
     }
+}
