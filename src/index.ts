@@ -1,8 +1,7 @@
-import express, { Request, Response } from 'express';
-import cors from 'cors';
-import { listaJogos } from './jogos'
-import createUser from './endpoints/Users/createUser';
-import loginUser from './endpoints/Users/loginUser';
+import express from 'express'
+import cors from 'cors'
+import createUser from './endpoints/Users/createUser'
+import loginUser from './endpoints/Users/loginUser'
 import editUser from './endpoints/Users/editUser'
 import changeRole from './endpoints/Users/changeRole'
 import deleteUser from './endpoints/Users/deleteUser'
@@ -14,12 +13,12 @@ import updateGame from './endpoints/Games/updateGame'
 import deleteGame from './endpoints/Games/deleteGame'
 
         
-const app = express();
-app.use(express.json());
-app.use(cors());
+const app = express()
+app.use(express.json())
+app.use(cors())
 
 // GET pegar todos os jogos
-app.get('/listarJogos', listAllGames);
+app.get('/listarJogos', listAllGames)
 // GET filtrar jogos
 app.get('/filtrarJogos', listFilteredGames)
 // GET paginar jogos
@@ -43,5 +42,5 @@ app.post("/user/changeRole", changeRole)
 app.delete("/user/delete", deleteUser)
 
 app.listen(3003, () => {
-    console.log("Servidor rodando na porta 3003.");
+    console.log("Servidor rodando na porta 3003.")
     });

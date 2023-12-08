@@ -8,7 +8,7 @@ export default async function loginUser(req: Request, res: Response):Promise<voi
         const {email, password} = req.body
         
         if(!email || !password){
-            res.status(422)
+            res.status(400)
             throw new Error("Preencha os campos corretamente. Campos necessários: 'email' e 'password'.")
         }
 

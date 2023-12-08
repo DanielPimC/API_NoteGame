@@ -9,8 +9,8 @@ export default async function editUser(req: Request, res: Response): Promise<voi
         const token = req.headers.authorization
 
         if (!token) {
-            res.status(401);
-            throw new Error("Preencha o header corretamente. Campo necessário: 'Authorization'.");
+            res.status(401)
+            throw new Error("Preencha o header corretamente. Campo necessário: 'Authorization'.")
         }
 
         const authenticator = new Authenticator()
@@ -24,46 +24,46 @@ export default async function editUser(req: Request, res: Response): Promise<voi
             throw new Error("Preencha o(s) campo(s) que quer editar.")
         }
 
-        const changes: { name?: string; email?: string; password?: string } = {};
+        const changes: { name?: string; email?: string; password?: string } = {}
 
         if (email) {
             const [existingUserWithEmail] = await connection('users')
-                .where({ email });
+                .where({ email })
 
             if (existingUserWithEmail) {
                 res.status(409)
-                throw new Error("Email já cadastrado.");
+                throw new Error("Email já cadastrado.")
             }
 
             if (email !== user.email) {
-                changes.email = email;
+                changes.email = email
             }
         }
 
         if(name){
             if(name === user.name){
-                res.status(400)
-                throw new Error("O nome inserido é igual ao atual.");
+                res.status(409)
+                throw new Error("O nome inserido é igual ao atual.")
             }
-            changes.name = name;
+            changes.name = name
         }
 
         if (password) {
-            const samePassword = await compare(password, user.password);
+            const samePassword = await compare(password, user.password)
 
             if (samePassword) {
-                res.status(400)
-                throw new Error("A senha inserida é igual a atual.");
+                res.status(409)
+                throw new Error("A senha inserida é igual a atual.")
             }
 
-            const cypherPassword = await hash(password);
-            changes.password = cypherPassword;
+            const cypherPassword = await hash(password)
+            changes.password = cypherPassword
         }
 
         if (Object.keys(changes).length > 0) {
             await connection('users')
                 .update(changes)
-                .where({ id: tokenData.id });
+                .where({ id: tokenData.id })
         }
 
         res.send("Usuário atualizado com sucesso.").status(200)

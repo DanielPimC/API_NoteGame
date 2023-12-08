@@ -23,22 +23,22 @@ export default async function createUser(req: Request, res: Response): Promise<v
         }
 
         const id: string = generateId()
-        const cypherPassword = await hash(password);
+        const cypherPassword = await hash(password)
         let role: Roles = Roles.USER
 
         if (email === "daniel@admin.com") {
             role = Roles.ADMIN
         }
 
-        const newUser: user = { id, name, email, password: cypherPassword, role };
+        const newUser: user = { id, name, email, password: cypherPassword, role }
 
         await connection('users')
             .insert(newUser)
 
-        const authenticator = new Authenticator();
-        authenticator.generateToken({ id: id, role: role });
+        const authenticator = new Authenticator()
+        authenticator.generateToken({ id: id, role: role })
 
-        res.send(`Usuário criado com sucesso!`).status(200)
+        res.send(`Usuário criado com sucesso!`).status(201)
     }catch(error: any){
         res.send(error.sqlMessage || error.message).status(500)
     }

@@ -1,27 +1,31 @@
-import { Request, Response } from 'express';
-import connection from '../../connection';
+import { Request, Response } from 'express'
+import connection from '../../connection'
 import { Authenticator } from '../../services/Authenticator' 
 
 export default async function updateGame(req: Request, res: Response):Promise<void> {
     try {
-        let idJogo = req.params.id;
-        let { nomeJogo, genero, nota } = req.body;
-        const token = req.headers.authorization;
+        let idJogo = req.params.id
+        let { nomeJogo, genero, nota } = req.body
+        const token = req.headers.authorization
 
         if (!token) {
-            res.status(401);
-            throw new Error("Preencha o header corretamente. Campo necessário: 'Authorization'.");
+            res.status(401)
+            throw new Error("Preencha o header corretamente. Campo necessário: 'Authorization'.")
         }
         
         const authenticator = new Authenticator()
         const tokenData = authenticator.getTokenData(token)
 
-        const [user] = await connection ('users')
-            .where({ id: tokenData.id })
+        const [user] = await connection('users')
+        .where({ id: tokenData.id })
 
+        if (!user) {
+            res.status(404)
+            throw new Error("Usuário inexistente.")
+        }
 
         if (!nomeJogo && !genero && !nota === undefined ) {
-            res.status(400);
+            res.status(400)
             throw new Error("Preencha os campos corretamente. Campos disponíveis: 'nomeJogo', 'genero' e/ou 'nota'.")
         }
         if(nota){
@@ -52,39 +56,39 @@ export default async function updateGame(req: Request, res: Response):Promise<vo
         
         if(nomeJogo){
             if(nomeJogo === findGame.name){
-                res.status(400)
+                res.status(409)
                 throw new Error("O nome inserido é igual ao atual.")
             }
             await connection('games')
                 .update({name: nomeJogo})
                 .where({id: idJogo})
-            mensagens.push(`SUCESSO! Nome do jogo alterado para ${nomeJogo}.`);
+            mensagens.push(`SUCESSO! Nome do jogo alterado para ${nomeJogo}.`)
         }
 
         if(genero){
             if(genero === findGame.genre){
-                res.status(400)
+                res.status(409)
                 throw new Error("O gênero inserido é igual ao atual.")
             }
             await connection('games')
                 .update({genre: genero})
                 .where({id: idJogo})
-            mensagens.push(`SUCESSO! Gênero do jogo alterado para ${genero}.`);
+            mensagens.push(`SUCESSO! Gênero do jogo alterado para ${genero}.`)
         }
 
         if(nota){
             if(nota === findGame.rating){
-                res.status(400)
+                res.status(409)
                 throw new Error("A nota inserida é igual a atual.")
             }
             await connection('games')
                 .update({rating: nota})
                 .where({id: idJogo})   
-            mensagens.push(`SUCESSO! Nota do jogo alterada para ${nota}.`);
+            mensagens.push(`SUCESSO! Nota do jogo alterada para ${nota}.`)
         }
 
         if(mensagens.length === 0){
-            res.send("Nenhuma alteração feita.").status(200)
+            res.send("Nenhuma alteração foi realizada.").status(204)
         }else {
             res.send(mensagens.join('\n')).status(200)
         }

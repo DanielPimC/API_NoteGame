@@ -11,7 +11,6 @@ export default async function deleteUser(req: Request, res: Response):Promise<vo
             res.status(401)
             throw new Error("Preencha o header corretamente. Campo necessário: 'Authorization'.")
         }
-
         
         const authenticator = new Authenticator()
         const tokenData = authenticator.getTokenData(token)

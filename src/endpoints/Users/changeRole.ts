@@ -4,8 +4,8 @@ import { Authenticator } from '../../services/Authenticator'
 
 export default async function changeRole(req: Request, res: Response): Promise<void> {
     try {
-        const { email, role } = req.body;
-        const token = req.headers.authorization;
+        const { email, role } = req.body
+        const token = req.headers.authorization
 
         if (!token) {
             res.status(401)
@@ -15,14 +15,14 @@ export default async function changeRole(req: Request, res: Response): Promise<v
         const authenticator = new Authenticator()
         const tokenData = authenticator.getTokenData(token)
 
-        if (!email && !role) {
-            res.status(400)
-            throw new Error("Preencha os campos corretamente. Campos necessários: 'email' e 'role'.")
-        }
-
         if (tokenData.role === "USER") {
             res.status(403)
             throw new Error("Você não tem permissão para alterar a role de outro usuário.")
+        }
+
+        if (!email && !role) {
+            res.status(400)
+            throw new Error("Preencha os campos corretamente. Campos necessários: 'email' e 'role'.")
         }
 
         const [user] = await connection('users')
@@ -44,7 +44,7 @@ export default async function changeRole(req: Request, res: Response): Promise<v
         }
 
         if (user.role === role) {
-            res.status(400)
+            res.status(409)
             throw new Error(`A role do usuário já é ${role}. Nenhuma alteração realizada.`)
         }
 

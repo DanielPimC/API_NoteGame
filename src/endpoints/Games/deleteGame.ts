@@ -1,15 +1,15 @@
-import { Request, Response } from 'express';
-import connection from '../../connection';
+import { Request, Response } from 'express'
+import connection from '../../connection'
 import { Authenticator } from '../../services/Authenticator'
 
 export default async function deleteGame(req: Request, res: Response):Promise<void> {
     try {
-        const token = req.headers.authorization;
-        let idJogo = req.params.id;
+        const token = req.headers.authorization
+        let idJogo = req.params.id
 
         if (!token) {
-            res.status(401);
-            throw new Error("Preencha o header corretamente. Campo necessário: 'Authorization'.");
+            res.status(401)
+            throw new Error("Preencha o header corretamente. Campo necessário: 'Authorization'.")
         }
 
         const authenticator = new Authenticator()
@@ -17,6 +17,11 @@ export default async function deleteGame(req: Request, res: Response):Promise<vo
 
         const [user] = await connection ('users')
             .where({ id: tokenData.id })
+
+        if (!user) {
+            res.status(404)
+            throw new Error("Usuário inexistente.")
+        }
 
         if (!idJogo) {
             res.status(400)

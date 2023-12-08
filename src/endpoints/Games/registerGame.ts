@@ -1,17 +1,17 @@
-import { Request, Response } from 'express';
-import connection from '../../connection';
+import { Request, Response } from 'express'
+import connection from '../../connection'
 import { game } from '../../types'
 import { generateId } from '../../services/IdGenerator'
 import { Authenticator } from '../../services/Authenticator'
 
 export default async function registerGame(req: Request, res: Response):Promise<void> {
     try {
-        let { nomeJogo, genero, nota } = req.body;
-        const token = req.headers.authorization;
+        let { nomeJogo, genero, nota } = req.body
+        const token = req.headers.authorization
 
         if (!token) {
-            res.status(401);
-            throw new Error("Preencha o header corretamente. Campo necessário: 'Authorization'.");
+            res.status(401)
+            throw new Error("Preencha o header corretamente. Campo necessário: 'Authorization'.")
         }
 
         const authenticator = new Authenticator()
@@ -19,6 +19,11 @@ export default async function registerGame(req: Request, res: Response):Promise<
 
         const [user] = await connection ('users')
             .where({ id: tokenData.id })
+
+        if (!user) {
+            res.status(404)
+            throw new Error("Usuário inexistente.")
+        }
 
         if (nomeJogo === undefined || nomeJogo.trim() === '') {
             res.status(400)
@@ -41,11 +46,11 @@ export default async function registerGame(req: Request, res: Response):Promise<
             name: nomeJogo,
             genre: genero,
             rating: nota
-        };
+        }
 
         await connection('games')
-            .insert(newGame);
-        res.send(`SUCESSO! Jogo ${nomeJogo} criado.`).status(201);
+            .insert(newGame)
+        res.send(`SUCESSO! Jogo ${nomeJogo} criado.`).status(201)
     } catch (error: any) {
         res.send(error.sqlMessage || error.message).status(500)
     }
